@@ -3,7 +3,7 @@ from lenet_slim import le_net
 from utils import *
 
 batch_size = 256
-dataset_percentage = 1.0 # 1.0 takes 100k rows. 0.1 takes 10k rows.
+dataset_percentage = 0.2 # 1.0 takes 100k rows. 0.1 takes 10k rows.
 
 if __name__ == '__main__':
     [images_train, labels_train], [images_test, labels_test] = read_dataset(dataset_percentage)
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     class_activation_map = get_class_map(0, top_conv, im_width)
 
     y_ = tf.placeholder(tf.int64, [None])
-    cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(y, y_))
+    cross_entropy = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=y, labels=y_))
 
     train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
 
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     step_start = restore(sess, saver)
     print('Finished initializing the model...')
 
-    for i in range(step_start, 100000):
+    for i in range(0, 10000):
         print(i)
         batch_xs, batch_ys, _ = next_batch(images_train, labels_train, i, batch_size)
         sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
